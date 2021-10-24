@@ -1,0 +1,30 @@
+{
+  "name": "flashy",
+  "version": "1.0.0",
+  "description": "To flash microcontrollers",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --linux snap",
+    "dist_win32": "electron-builder --win --ia32 ",
+    "dist_win64": "electron-builder --win --x64 ",
+    "dist_mac": "electron-builder --mac"
+  },
+  "author": "walid amriou",
+  "license": "ISC",
+  "build": {
+    "icon": "./assets/img/logo/logo.png",
+    "extraFiles":[
+      "core1.exe"
+    ]
+   },
+   
+  "devDependencies": {
+    "electron": "^15.3.0",
+    "electron-builder": "^22.13.1",
+    "electron-packager": "^15.4.0"
+  },
+  "dependencies": {
+    "usb": "^1.8.0"
+  }
+}
