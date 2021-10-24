@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Flashy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="assets/img/logo/logo.png" type="image/png" sizes="16x16">
+    <link rel="stylesheet" href="assets/design/kit/material.min.css">
+    <script src="assets/design/kit/material.min.js"></script>
+    <script src="assets/js/jquery.min.js"></script>
+    <link href="assets/icons/icon.css" rel="stylesheet">
+    <script src="renderer.js"></script>
+
+    <script>
+
+
+    window.onload=function(){
+      var button1_connect = document.getElementById("button1_connect");
+      button1_connect.addEventListener("click", button1_connect_handle);
+
+      var button2_choose_file = document.getElementById("button2_choose_file");
+      button2_choose_file.addEventListener("click", button2_choose_file_handle);
+
+      var button3_flash = document.getElementById("button3_flash");
+      button3_flash.addEventListener("click", button3_flash_handle);
+
+    }   
+
+    function button1_connect_handle(){
+      var com_number = document.getElementById("input_com_connect").value;
+      let com_number_string = com_number.trim();
+      if(com_number_string.indexOf('C') === 0 && com_number_string.indexOf('O') === 1 && com_number_string.indexOf('M') === 2){
+        //console.log("Input COM current");
+        //console.log(com_number);
+        // connect to microcontroller
+        ipcRenderer.send("channel_1",com_number_string);
+        dialog.showModal();
+        document.getElementById("button1_connect").disabled = true;
+        document.getElementById("button2_choose_file").disabled = true;
+        document.getElementById("button3_flash").disabled = true;
+        // Save port number to use it
+       COM_NUMER_TO_FLASH=com_number;
+      }
+      else{
+        //console.log("COM input is incorrect");
+        let toast_data = {message: 'Error 1: COM input is incorrect Try again ',timeout: 400,};
+        let snackbarContainer = document.querySelector('#toast');
+        // red
+        snackbarContainer.style.backgroundColor = '#ff2d57';
+        snackbarContainer.MaterialSnackbar.showSnackbar(toast_data);
+        document.getElementById("microcontroller_information").innerHTML = "";
+        document.getElementById("button1_connect").disabled = false;
+        document.getElementById("button2_choose_file").disabled = true;
+        document.getElementById("button3_flash").disabled = true;
+      }
+      
+    }
+
+    // receive from nodeJS about connect
+    ipcRenderer.on("channel_2",(event,data)=>{
+        dialog.close();
+      let data_buffer1 = data.substring(data.indexOf(":")+1);
+      let data_buffer2 = data_buffer1.split(' ');
+      //console.log(data_buffer2[1]);
+      if(data_buffer2[1]!="(2)"){
+        let toast_data = {message: 'Microcontroller '+data_buffer2[1]+' Connected',timeout: 400};
+        let snackbarContainer = document.querySelector('#toast');
+        snackbarContainer.MaterialSnackbar.showSnackbar(toast_data);
+        // red
+        snackbarContainer.style.backgroundColor = '#34c759';
+        document.getElementById("microcontroller_information").innerHTML = data_buffer2[1];
+        document.getElementById("button1_connect").disabled = false;
+        document.getElementById("button2_choose_file").disabled = false;
+        document.getElementById("button3_flash").disabled = true;
+        document.getElementById("space_Connect").style.backgroundColor = '#34c759'; 
+      }
+      else{
+        let toast_data = {message: 'Error 2: problem to communicate or the microcontroller unknown',timeout: 400};
+        let snackbarContainer = document.querySelector('#toast');
+        // red
+        snackbarContainer.style.backgroundColor = '#ff2d57';
+        snackbarContainer.MaterialSnackbar.showSnackbar(toast_data);
+        document.getElementById("microcontroller_information").innerHTML = "";
+        document.getElementById("button1_connect").disabled = false;
+        document.getElementById("button2_choose_file").disabled = true;
+        document.getElementById("button3_flash").disabled = true;
+        document.getElementById("space_Connect").style.backgroundColor = '#fff'; 
+      }
+      
+    })
+
+    // handle choose file button
+    function button2_choose_file_handle(){
+      dialog.showModal();
+      document.getElementById("button1_connect").disabled = true;
+      document.getElementById("button2_choose_file").disabled = true;
+      document.getElementById("button3_flash").disabled = true;
+      //console.log("button2_choose_file");
+      ipcRenderer.send("channel_3",1);
+    }
+
+    // receive from nodeJS about file path to flash
+    ipcRenderer.on("channel_4",(event,data)=>{
+      dialog.close();
+      //console.log(data);
+      document.getElementById("file_name").innerHTML = data;
+      let result = data.search("error");
+      if(result<0){
+        document.getElementById("file_name").innerHTML = data;
+        document.getElementById("button1_connect").disabled = false;
+        document.getElementById("button2_choose_file").disabled = false;
+        document.getElementById("button3_flash").disabled = false;
+        document.getElementById("space_file").style.backgroundColor = '#34c759'; 
+        FILE_PATH_To_FLASH=data;
+      }
+      else{
+        document.getElementById("file_name").innerHTML = " ";
+        document.getElementById("button1_connect").disabled = false;
+        document.getElementById("button2_choose_file").disabled = false;
+        document.getElementById("button3_flash").disabled = true;
+        //console.log("button2_choose_file");
+    }
+      
+
+    })
+  
+
+    // handle flash button
+    function button3_flash_handle(){
+      dialog.showModal();
+      document.getElementById("button1_connect").disabled = true;
+      document.getElementById("button2_choose_file").disabled = true;
+      document.getElementById("button3_flash").disabled = true;
+      //console.log("button3_flash");
+      let data = COM_NUMER_TO_FLASH +","+FILE_PATH_To_FLASH;
+      ipcRenderer.send("channel_5",data);
+    }
+
+    // receive flash information
+    ipcRenderer.on("channel_6",(event,data)=>{
+      dialog.close();
+      //console.log(data);
+
+    let result = data.search("Reset");
+    if(result>0){
+      let toast_data = {message: 'Flash Done',timeout: 600};
+        let snackbarContainer = document.querySelector('#toast');
+        // green
+        snackbarContainer.style.backgroundColor = '#34c759';
+        snackbarContainer.MaterialSnackbar.showSnackbar(toast_data);
+    }
+    else{
+      let toast_data = {message: 'Error 3: problem to flash',timeout: 600};
+      let snackbarContainer = document.querySelector('#toast');
+      // red
+      snackbarContainer.style.backgroundColor = '#ff2d57';
+      snackbarContainer.MaterialSnackbar.showSnackbar(toast_data);
+    }
+    
+      document.getElementById("microcontroller_information").innerHTML = "";
+      document.getElementById("file_name").innerHTML = "";
+      document.getElementById("button1_connect").disabled = false;
+      document.getElementById("button2_choose_file").disabled = true;
+      document.getElementById("button3_flash").disabled = true;
+      document.getElementById("space_Connect").style.backgroundColor = '#fff'; 
+      document.getElementById("space_file").style.backgroundColor = '#fff'; 
+
+    })
+    
+
+
+    </script>
+
+<style>
+  body{
+    background-color: #F5F5F5;
+  }
+  * {
+	margin:0;
+	padding:0;
+	border:0;
+}
+@media (min-width:600px) {
+      .mdl-list {
+        padding-left: 1%;
+        padding-top: 1%;
+        padding-bottom: 1%;
+
+      }
+    }
+
+    @media (max-width:700px) {
+      .mdl-list {
+        padding-left: 2%;
+      }
+    }
+</style>
+  </head>
+  <body>
+<div style="margin: 30px;color: #424242;">
+  <h4>
+    <img src="assets/img/logo/logo.png" style="width: 60px;height: 60px;">
+    <b>Flashy</b></h4>
+</div>
+
+
+<dialog class="mdl-dialog mdl-shadow--3dp" style="text-align: center;border-radius:20px;margin:250px ;width: 70;height: 100px;">
+  <div class="mdl-dialog__content">
+    please wait ...
+    <br>
+    <div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>
+  </div>
+</dialog>
+
+
+<div id="space_microcontroller" style="height: 20px;margin: 10px;margin-left: 40px;border-radius:20px">
+  Select Microcontroller
+  <button id="demo-menu-lower-right"
+          class="mdl-button mdl-js-button mdl-button--icon">
+    <i class="material-icons">more_vert</i>
+  </button>
+  
+  <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+      for="demo-menu-lower-right">
+    <li class="mdl-menu__item">Renesas RL78</li>
+  </ul>
+  </div>
+
+
+
+<div id="space_Connect" class="mdl-shadow--3dp" style="height: 80px;margin: 15px;margin-bottom: 40px;border-radius:20px">
+<center>
+  <div class="mdl-grid">
+    <div class="mdl-cell mdl-cell--2-col">
+      <form action="#" style="width: 200px;">
+        <div class="mdl-textfield mdl-js-textfield">
+          <input class="mdl-textfield__input" type="text" id="input_com_connect" maxlength="5" autocomplete="off">
+          <label class="mdl-textfield__label" for="input_com_connect">COM number (e.g. COM15)</label>
+        </div>
+      </form>
+    </div>
+    <div class="mdl-cell mdl-cell--2-col" style="margin-top: 20px;">
+      <button id="button1_connect" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" style="border-radius:13px;background-color: #007bff;color: white;" data-upgraded=",MaterialButton,MaterialRipple">
+        Connect
+      <span class="mdl-button__ripple-container"><span class="mdl-ripple"></span></span></button>
+    </div>
+    <div class="mdl-cell mdl-cell--4-col">
+      <h6 id="microcontroller_information">    
+              
+      </h6>
+
+    </div>
+  </div>
+</center>
+</div>
+
+
+
+
+
+
+<div id="space_file" class="mdl-shadow--3dp" style="height: 80px;margin: 15px;margin-bottom: 30px;border-radius:20px">
+  <center>
+    <div class="mdl-grid">
+      <div class="mdl-cell mdl-cell--2-col" style="margin-top: 20px;">
+        <button id="button2_choose_file" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" style="border-radius:13px;background-color: #007bff;color: white;" data-upgraded=",MaterialButton,MaterialRipple" disabled>
+          Choose file
+        </button>
+      </div>
+      <div class="mdl-cell mdl-cell--4-col">
+        <h6 id="file_name">
+          
+        </h6>
+      </div>
+    </div>
+  </center>
+  </div>
+
+<div style="margin: 20px; margin-bottom: 10px;">
+  <center>
+    <button id="button3_flash" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" style="width: 200px;height: 50px;border-radius:20px;background-color: #ff2d57;color: white;" disabled>
+      Flash
+    </button>
+</center>  
+</div>
+
+<div id="toast" class="mdl-js-snackbar mdl-snackbar">
+  <div class="mdl-snackbar__text"></div>
+  <button class="mdl-snackbar__action" type="button"></button>
+</div>
+
+
+
+<script>
+          // Wait Dialog
+          var dialog = document.querySelector('dialog');
+  var showDialogButton = document.querySelector('#show-dialog');
+  if (! dialog.showModal) {
+    dialogPolyfill.registerDialog(dialog);
+  }
+    
+  dialog.querySelector('.close').addEventListener('click', function() {
+    dialog.close();
+  });
+</script>
+
+
+
+<footer class="mdl-mini-footer" style="color: #a2855e;background-color: #F5F5F5;">
+  <div class="mdl-mini-footer__center-section">
+    <div>version v1.0.0</div>
+    <ul class="mdl-mini-footer__link-list">
+      <li><a href="https://flashy.walidamriou.com/help" target="_blank">Help</a></li>
+      <li><a href="https://flashy.walidamriou.com/release/v100" target="_blank">release notes</a></li>
+      <li><a href="https://flashy.walidamriou.com/about" target="_blank">about</a></li>
+    </ul>
+  </div>
+  <div class="mdl-mini-footer__right-section">
+    <ul class="mdl-mini-footer__link-list">
+      <li><a href="https://flashy.walidamriou.com"target="_blank" >flashy.walidamriou.com</a></li>
+    </ul>
+  </div>
+</footer>
+  </body>
+</html>
