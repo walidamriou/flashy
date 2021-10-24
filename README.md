@@ -55,3 +55,5 @@ The logo and the name of the project are owned by The original angel, and do not
 - https://github.com/electron-userland/electron-builder
 - https://github.com/node-usb/node-usb
 
+
+This tool is not sufficiently accurate to work in the industrial environment. Use it with student prototyping and amateur development only. 
