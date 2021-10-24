@@ -1,2 +1,0 @@
-# flashy
-To flash microcontrollers
