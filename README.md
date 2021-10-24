@@ -1,6 +1,10 @@
 # flashy
 To flash microcontrollers
 
+<p align="center">
+  <img width="70%" height="70%" src="https://github.com/walidamriou/flashy/blob/main/docs/img/v100/f1.PNG">
+</p>
+
 ## Website 
 https://flashy.walidamriou.com
 
