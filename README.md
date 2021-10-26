@@ -1,5 +1,6 @@
 # flashy
-To flash microcontrollers
+Minimalist tool to flash microcontrollers
+
 
 <p align="center">
   <img width="70%" height="70%" src="https://github.com/walidamriou/flashy/blob/main/docs/img/v100/f1.PNG">
