@@ -58,34 +58,52 @@
 
     // receive from nodeJS about connect
     ipcRenderer.on("channel_2",(event,data)=>{
-        dialog.close();
-      let data_buffer1 = data.substring(data.indexOf(":")+1);
-      let data_buffer2 = data_buffer1.split(' ');
-      //console.log(data_buffer2[1]);
-      if(data_buffer2[1]!="(2)"){
-        let toast_data = {message: 'Microcontroller '+data_buffer2[1]+' Connected',timeout: 400};
-        let snackbarContainer = document.querySelector('#toast');
-        snackbarContainer.MaterialSnackbar.showSnackbar(toast_data);
-        // red
-        snackbarContainer.style.backgroundColor = '#34c759';
-        document.getElementById("microcontroller_information").innerHTML = data_buffer2[1];
-        document.getElementById("button1_connect").disabled = false;
-        document.getElementById("button2_choose_file").disabled = false;
-        document.getElementById("button3_flash").disabled = true;
-        document.getElementById("space_Connect").style.backgroundColor = '#34c759'; 
+      dialog.close();
+      // receive failed
+      let result = data.search("failed");
+      if(result<0){
+        let data_buffer1 = data.substring(data.indexOf(":")+1);
+        let data_buffer2 = data_buffer1.split(' ');
+        //console.log(data_buffer2[1]);
+        if(data_buffer2[1]!="(2)"){
+          let toast_data = {message: 'Microcontroller '+data_buffer2[1]+' Connected',timeout: 400};
+          let snackbarContainer = document.querySelector('#toast');
+          snackbarContainer.MaterialSnackbar.showSnackbar(toast_data);
+          // red
+          snackbarContainer.style.backgroundColor = '#34c759';
+          document.getElementById("microcontroller_information").innerHTML = data_buffer2[1];
+          document.getElementById("button1_connect").disabled = false;
+          document.getElementById("button2_choose_file").disabled = false;
+          document.getElementById("button3_flash").disabled = true;
+          document.getElementById("space_Connect").style.backgroundColor = '#34c759'; 
+        }
+        else{
+          let toast_data = {message: 'Error 2: problem to communicate or the microcontroller unknown',timeout: 400};
+          let snackbarContainer = document.querySelector('#toast');
+          // red
+          snackbarContainer.style.backgroundColor = '#ff2d57';
+          snackbarContainer.MaterialSnackbar.showSnackbar(toast_data);
+          document.getElementById("microcontroller_information").innerHTML = "";
+          document.getElementById("button1_connect").disabled = false;
+          document.getElementById("button2_choose_file").disabled = true;
+          document.getElementById("button3_flash").disabled = true;
+          document.getElementById("space_Connect").style.backgroundColor = '#fff'; 
+        }
       }
       else{
         let toast_data = {message: 'Error 2: problem to communicate or the microcontroller unknown',timeout: 400};
-        let snackbarContainer = document.querySelector('#toast');
-        // red
-        snackbarContainer.style.backgroundColor = '#ff2d57';
-        snackbarContainer.MaterialSnackbar.showSnackbar(toast_data);
-        document.getElementById("microcontroller_information").innerHTML = "";
-        document.getElementById("button1_connect").disabled = false;
-        document.getElementById("button2_choose_file").disabled = true;
-        document.getElementById("button3_flash").disabled = true;
-        document.getElementById("space_Connect").style.backgroundColor = '#fff'; 
+          let snackbarContainer = document.querySelector('#toast');
+          // red
+          snackbarContainer.style.backgroundColor = '#ff2d57';
+          snackbarContainer.MaterialSnackbar.showSnackbar(toast_data);
+          document.getElementById("microcontroller_information").innerHTML = "";
+          document.getElementById("button1_connect").disabled = false;
+          document.getElementById("button2_choose_file").disabled = true;
+          document.getElementById("button3_flash").disabled = true;
+          document.getElementById("space_Connect").style.backgroundColor = '#fff';         
       }
+
+
       
     })
 
