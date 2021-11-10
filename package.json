@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --linux snap",
+    "dist": "electron-rebuild",
+    "dist-linux": "electron-builder --linux snap",
     "dist_win32": "electron-builder --win --ia32 ",
     "dist_win64": "electron-builder --win --x64 ",
     "dist_mac": "electron-builder --mac"
@@ -14,17 +15,19 @@
   "license": "ISC",
   "build": {
     "icon": "./assets/img/logo/logo.png",
-    "extraFiles":[
+    "extraFiles": [
       "core1.exe"
     ]
-   },
-   
+  },
   "devDependencies": {
     "electron": "^15.3.0",
     "electron-builder": "^22.13.1",
-    "electron-packager": "^15.4.0"
+    "electron-packager": "^15.4.0",
+    "electron-rebuild": "^3.2.3"
   },
   "dependencies": {
+    "arch": "^2.2.0",
+    "serialport": "^9.2.4",
     "usb": "^1.8.0"
   }
 }
