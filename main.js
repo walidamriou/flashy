@@ -4,10 +4,12 @@
 const {app, shell, BrowserWindow,ipcMain,dialog} = require('electron')
 const path = require('path')
 
-var usb = require('usb')
+//var arch = require('arch')
+//console.log(arch()) // always returns 'x64' or 'x86'
 
 // Handle when click in NodeJS to connect
 const { spawnSync } = require( 'child_process' );
+
 ipcMain.on("channel_1",(event,data)=>{
     //console.log("Date received by Node in channel_1:"+data);
     let com = 'core1 -i '+data;
@@ -47,6 +49,12 @@ ipcMain.on("channel_5",(event,data)=>{
   //console.log(dir.output.toString());
 })
 
+// handle COM USB port check
+ipcMain.on("channel_7",(event,data)=>{
+  let com = 'REG QUERY \"HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\\SERIALCOMM\" /V \"\\Device\\VCP*\"';
+  let dir = spawnSync('powershell', ['/c', com]);
+  event.reply('channel_8', `${dir.output.toString()}`);
+})
 
 
 
