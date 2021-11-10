@@ -121,9 +121,10 @@
     ipcRenderer.on("channel_4",(event,data)=>{
       dialog.close();
       //console.log(data);
-      document.getElementById("file_name").innerHTML = data;
+      //document.getElementById("file_name").innerHTML = data;
       let result = data.search("error");
       if(result<0){
+        console.log(typeof(data))
         document.getElementById("file_name").innerHTML = data;
         document.getElementById("button1_connect").disabled = false;
         document.getElementById("button2_choose_file").disabled = false;
@@ -278,20 +279,27 @@
 
 
 <div id="space_file" class="mdl-shadow--3dp" style="height: 80px;margin: 15px;margin-bottom: 30px;border-radius:20px">
-  <center>
+  <!--
+
+ <center>
+     -->
     <div class="mdl-grid">
       <div class="mdl-cell mdl-cell--2-col" style="margin-top: 20px;">
         <button id="button2_choose_file" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" style="border-radius:13px;background-color: #007bff;color: white;" data-upgraded=",MaterialButton,MaterialRipple" disabled>
           Choose file
         </button>
       </div>
-      <div class="mdl-cell mdl-cell--4-col">
-        <h6 id="file_name">
-          
-        </h6>
+      <div class="mdl-cell mdl-cell--6-col" >
+        <div>
+          <p id="file_name" style="font-size: small;max-width: 350px;word-break: break-all;">
+            
+          </p>          
+        </div>
       </div>
     </div>
+    <!--
   </center>
+    -->
   </div>
 
 <div style="margin: 20px; margin-bottom: 10px;">
